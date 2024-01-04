@@ -1,10 +1,12 @@
 {
+  "env": {
+    "myIncludePath": ["include", "src", "include/lib/"],
+    "myDefines": ["DEBUG", "MY_FEATURE=1"]
+  },
   "configurations": [
     {
       "name": "linux-gcc-x64",
-      "includePath": [
-        "${workspaceFolder}/**"
-      ],
+      "includePath": ["${myIncludePath}", "/usr/include"],
       "compilerPath": "/usr/bin/gcc",
       "cStandard": "${default}",
       "cppStandard": "${default}",

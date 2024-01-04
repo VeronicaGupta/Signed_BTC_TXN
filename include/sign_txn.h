@@ -7,4 +7,4 @@
 
 void doubleHash(const uint8_t *data, size_t len, uint8_t *output);
 
-#endif // DOUBLE_HASH_H
+#endif // SIGN_TXN_H
