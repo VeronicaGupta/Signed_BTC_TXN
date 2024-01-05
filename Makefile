@@ -1,69 +1,30 @@
-########################################################################
-####################### Makefile Template ##############################
-########################################################################
-
-# Compiler settings - Can be customized.
 CC = gcc
-CXXFLAGS = -std=c11 -Wall
-LDFLAGS = 
+CFLAGS = -std=c11 -Wall -Iinclude -Wno-unused-variable
+SRC_DIR = src
+LIB_DIR = lib
+OBJ_DIR = obj
+BIN_DIR = bin
 
-# Makefile settings - Can be customized.
-APPNAME = sign
-EXT = .c
-SRCDIR = src
-OBJDIR = obj
+SRC = $(LIB_DIR)/trezor-crypto/sha2.c
+SRC += $(LIB_DIR)/trezor-crypto/memzero.c
 
-############## Do not change anything from here downwards! #############
-SRC = $(wildcard $(SRCDIR)/*$(EXT))
-OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
-DEP = $(OBJ:$(OBJDIR)/%.o=%.d)
-# UNIX-based OS variables & settings
-RM = rm
-DELOBJ = $(OBJ)
-# Windows OS variables & settings
-DEL = del
-EXE = .exe
-WDELOBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)\\%.o)
+SRC += $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+EXE = $(BIN_DIR)/sign
 
-########################################################################
-####################### Targets beginning here #########################
-########################################################################
+$(EXE): $(OBJ) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^
 
-all: $(APPNAME)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-# Builds the app
-$(APPNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
-# Creates the dependecy rules
-%.d: $(SRCDIR)/%$(EXT)
-	@$(CPP) $(CFLAGS) $< -MM -MT $(@:%.d=$(OBJDIR)/%.o) >$@
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
-# Includes all .h files
--include $(DEP)
-
-# Building rule for .o files and its .c/.cpp in combination with all .h
-$(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
-	$(CC) $(CXXFLAGS) -o $@ -c $<
-
-################### Cleaning rules for Unix-based OS ###################
-# Cleans complete project
-.PHONY: clean
 clean:
-	$(RM) $(DELOBJ) $(DEP) $(APPNAME)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-# Cleans only all files with the extension .d
-.PHONY: cleandep
-cleandep:
-	$(RM) $(DEP)
-
-#################### Cleaning rules for Windows OS #####################
-# Cleans complete project
-.PHONY: cleanw
-cleanw:
-	$(DEL) $(WDELOBJ) $(DEP) $(APPNAME)$(EXE)
-
-# Cleans only all files with the extension .d
-.PHONY: cleandepw
-cleandepw:
-	$(DEL) $(DEP)
+.PHONY: clean
