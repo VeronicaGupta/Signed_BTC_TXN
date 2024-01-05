@@ -9,5 +9,6 @@
 #include "../lib/trezor-crypto/sha2.h"
 
 void doubleHash(const uint8_t *data, size_t len, uint8_t *output);
+void hexToUint8(const char *hexString, uint8_t *result);
 
 #endif // SIGN_TXN_H
