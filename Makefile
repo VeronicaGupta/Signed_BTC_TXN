@@ -1,12 +1,16 @@
 CC = gcc
 CFLAGS = -std=c11 -Wall -Iinclude -Wno-unused-variable
 SRC_DIR = src
-LIB_DIR = lib
+LIB_DIR = include
 OBJ_DIR = obj
 BIN_DIR = bin
 
 SRC = $(LIB_DIR)/trezor-crypto/sha2.c
 SRC += $(LIB_DIR)/trezor-crypto/memzero.c
+# SRC += $(LIB_DIR)/trezor-crypto/bip39.c
+# SRC += $(LIB_DIR)/trezor-crypto/rand.c
+# SRC += $(LIB_DIR)/trezor-crypto/pbkdf2.c
+# SRC = $(LIB_DIR)/trezor-crypto/*.c
 
 SRC += $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))

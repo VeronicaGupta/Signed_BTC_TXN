@@ -57,5 +57,11 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "C_Cpp.errorSquiggles": "disabled",
-  "makefile.makefilePath": "."
+  "makefile.makefilePath": ".",
+  "files.associations": {
+    "bip39.h": "c",
+    "options.h": "c",
+    "bip32.h": "c",
+    "sha2.h": "c"
+  }
 }
