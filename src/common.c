@@ -26,7 +26,8 @@ uint8_t* print_arr(char* name, uint8_t* bytearray, size_t size){
 }
 
 uint8_t* print_hexarr(char* name, const char *hexString, size_t size){
-    uint8_t *bytearray = malloc(size);  // Allocate memory for the bytearray
+    uint8_t *bytearray = malloc(size);
+    
     if (bytearray == NULL) {
         fprintf(stderr, "Error: Memory allocation failed.\n");
         exit(EXIT_FAILURE);

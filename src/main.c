@@ -1,7 +1,4 @@
-#include "sign_txn.h"
-#include "priv_key.h"
-#include "common.h"
-#include <trezor-crypto/secp256k1.h>
+#include "utility.h"
 
 int main() {
 
@@ -18,17 +15,22 @@ int main() {
     doubleHash(unsigned_txn, unsigned_txn_hash, sizeof(unsigned_txn));   
     print_arr("unsigned txn hash", unsigned_txn_hash, SHA256_DIGEST_LENGTH);
 
-    // get private key
-    uint8_t* privateKey[32];
-    get_private_key(mnemonic, passphrase, privateKey);
-    print_arr("private key", privateKey, 32);
+    // get private and public key
+    HDNode node;
+    get_node(mnemonic, passphrase, node);
+    print_arr("private key", node.private_key, 32);
+    print_arr("public key", node.public_key, 32);
 
     // get signed txn
-    uint8_t* sig[64];
-    ecdsa_sign_digest(&secp256k1, privateKey, unsigned_txn_hash, sig, 0, 0);
+    uint8_t sig[64];
+    ecdsa_sign_digest(&secp256k1, node.private_key, unsigned_txn_hash, sig, 0, 0);
     print_arr("signature", sig, 64);
 
-    // 
+    // generate script sig
+    uint8_t scriptSig[100];
+    generate_script_sigz(sig, node.public_key, scriptSig);
+    print_arr("script sig", scriptSig, 100);
+
 
     return 0;
 }
