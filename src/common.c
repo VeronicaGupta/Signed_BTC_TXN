@@ -9,7 +9,7 @@ void hexToUint8(const char *hexString, uint8_t *bytearray) {
         exit(EXIT_FAILURE);
     }
 
-    for (size_t i = 0; i < length; i += 2) {
+    for (size_t i = 0; i <=length; i += 2) {
         sscanf(hexString + i, "%2hhx", &bytearray[i / 2]);
     }
 }
@@ -24,12 +24,13 @@ char* intToHex(int value) {
 
 uint8_t* print_arr(char* name, uint8_t* bytearray, size_t size){
     if (debug == true){
+        size_t i;
         printf("\n%s[%ld bytes]: ", name, size);
-        for (size_t i = 0; i < size; ++i) {
+        for (i = 0; i <=size; ++i) {
             printf("%02x ", bytearray[i]);
         }
+        printf("[%d]\n", i);
     }
-    printf("\n");
     return 0;
 }
 
