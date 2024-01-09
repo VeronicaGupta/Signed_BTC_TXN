@@ -14,6 +14,14 @@ void hexToUint8(const char *hexString, uint8_t *bytearray) {
     }
 }
 
+char* intToHex(int value) {
+    int num_digits = snprintf(NULL, 0, "%X", value);
+    char* hex_string = (char*)malloc(num_digits + 1);
+    snprintf(hex_string, num_digits + 1, "%X", value);
+
+    return hex_string;
+}
+
 uint8_t* print_arr(char* name, uint8_t* bytearray, size_t size){
     if (debug == true){
         printf("\n%s[%ld bytes]: ", name, size);
@@ -26,8 +34,8 @@ uint8_t* print_arr(char* name, uint8_t* bytearray, size_t size){
 }
 
 uint8_t* print_hexarr(char* name, const char *hexString, size_t size){
-    uint8_t *bytearray = malloc(size);
-    
+    uint8_t* bytearray = (uint8_t*) malloc(size);
+
     if (bytearray == NULL) {
         fprintf(stderr, "Error: Memory allocation failed.\n");
         exit(EXIT_FAILURE);

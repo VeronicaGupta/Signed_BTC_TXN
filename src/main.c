@@ -13,24 +13,31 @@ int main() {
     // get double hashed unsigned txn digest 
     uint8_t unsigned_txn_hash[SHA256_DIGEST_LENGTH];
     doubleHash(unsigned_txn, unsigned_txn_hash, sizeof(unsigned_txn));   
-    print_arr("unsigned txn hash", unsigned_txn_hash, SHA256_DIGEST_LENGTH);
+    print_arr("unsigned txn double hashed", unsigned_txn_hash, SHA256_DIGEST_LENGTH);
 
     // get private and public key
     HDNode node;
     get_node(mnemonic, passphrase, node);
     print_arr("private key", node.private_key, 32);
     print_arr("public key", node.public_key, 32);
+    size_t pubkey_len = sizeof(node.public_key)/sizeof(node.public_key[0]);
 
     // get signed txn
     uint8_t sig[64];
     ecdsa_sign_digest(&secp256k1, node.private_key, unsigned_txn_hash, sig, 0, 0);
     print_arr("signature", sig, 64);
+    size_t sig_len = sizeof(sig)/sizeof(sig[0]);
 
     // generate script sig
-    uint8_t scriptSig[100];
-    generate_script_sigz(sig, node.public_key, scriptSig);
-    print_arr("script sig", scriptSig, 100);
+    size_t scriptSig_len = 1 + sig_len + 1 + 1 + pubkey_len;
+    uint8_t scriptSig[scriptSig_len];
+    generate_script_sigz(sig, node.public_key, scriptSig, scriptSig_len, sig_len, pubkey_len);
+    print_arr("script sig outside fn", scriptSig, scriptSig_len);
 
+    
+    print_arr("")
+
+    free(unsigned_txn);
 
     return 0;
 }

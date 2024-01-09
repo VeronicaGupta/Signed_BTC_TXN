@@ -10,6 +10,6 @@
 
 void doubleHash(const uint8_t *data, uint8_t *output, size_t size);
 void get_node(const char *mnemonic, const char *passphrase, HDNode node);
-void generate_script_sigz(const uint8_t *signature, uint8_t* publicKey, uint8_t *scriptsig);
+size_t generate_script_sigz(const uint8_t *signature, uint8_t* publicKey, uint8_t *scriptSig, uint8_t scriptSig_len, uint8_t sig_len, uint8_t pubkey_len);
 
 #endif
