@@ -14,6 +14,23 @@ void hexToUint8(const char *hexString, uint8_t *bytearray) {
     }
 }
 
+char* uint8ToHexString(const uint8_t *data, size_t size) {
+    char *hexString = (char *)malloc((size * 2 + 1) * sizeof(char)); // Each byte represented by 2 characters + '\0'
+
+    if (hexString == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (size_t i = 0; i < size; ++i) {
+        sprintf(hexString + i * 2, "%02x", data[i]);
+    }
+
+    hexString[size * 2] = '\0'; // Null-terminate the string
+
+    return hexString;
+}
+
 char* intToHex(int value) {
     int num_digits = snprintf(NULL, 0, "%X", value);
     char* hex_string = (char*)malloc(num_digits + 1);

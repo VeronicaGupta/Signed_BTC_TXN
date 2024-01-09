@@ -71,38 +71,14 @@ void concatenate_arrays(uint8_t *dest, const uint8_t *src1, size_t len1, const u
     memcpy(dest + len1, src2, len2);
 }
 
-size_t write_callback(void *data, size_t size, size_t nmemb, void *userp) {
-    // This callback function is called by cURL to handle the response.
-    // You can add your own processing logic here if needed.
-    return size * nmemb;
-}
+int broadcast_transaction(uint8_t* signed_txn, uint8_t signed_txn_len) {
+    const char *signed_txn_hex = uint8ToHexString(signed_txn, signed_txn_len);  // Replace with your signed transaction hex
 
-void broadcast_transaction(const char *signed_txn_hex) {
-    CURL *curl;
-    CURLcode res;
+    // Construct the command to send via RPC
+    char command[256];
+    snprintf(command, sizeof(command), "bitcoin-cli sendrawtransaction %s", signed_txn_hex);
 
-    // Initialize cURL
-    curl_global_init(CURL_GLOBAL_ALL);
-    curl = curl_easy_init();
-
-    if (curl) {
-        // Set the cURL options
-        curl_easy_setopt(curl, CURLOPT_URL, "https://live.blockcypher.com/btc-testnet/pushtx/");
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, signed_txn_hex);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-
-        // Perform the HTTP POST request
-        res = curl_easy_perform(curl);
-
-        // Check for errors
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        }
-
-        // Cleanup
-        curl_easy_cleanup(curl);
-    }
-
-    // Cleanup cURL global state
-    curl_global_cleanup();
+    // Use system() to execute the command
+    int result = system(command);
+    return result;
 }

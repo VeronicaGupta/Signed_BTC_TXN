@@ -55,7 +55,13 @@ int main() {
     print_arr("signed txn", signed_txn, signed_txn_len);
 
     // broadcast signed txn
-    broadcast_transaction(const char *signed_txn_hex);
+    int result = broadcast_transaction(signed_txn, signed_txn_len);\
+
+    if (result == 0) {
+        printf("Transaction broadcast successful.\n");
+    } else {
+        fprintf(stderr, "Error: Transaction broadcast failed.\n");
+    }
 
 
     free(unsigned_txn);
