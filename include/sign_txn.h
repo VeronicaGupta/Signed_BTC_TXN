@@ -3,6 +3,6 @@
 
 #include "trezor-crypto/sha2.h"
 
-void doubleHash(const uint8_t *data, size_t len, uint8_t *output);
+void doubleHash(const uint8_t *data, uint8_t *output, size_t size);
 
 #endif

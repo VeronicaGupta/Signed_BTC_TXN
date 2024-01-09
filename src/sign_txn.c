@@ -1,6 +1,6 @@
 #include "sign_txn.h"
 
-void doubleHash(const uint8_t *data, size_t len, uint8_t *output) {
-    sha256_Raw(data, len, output);
+void doubleHash(const uint8_t *data, uint8_t *output, size_t size) {
+    sha256_Raw(data, size, output);
     sha256_Raw(output, SHA256_DIGEST_LENGTH, output);
 }
