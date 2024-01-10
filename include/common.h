@@ -14,7 +14,7 @@ char* intToHex(int value);
 uint8_t* print_arr(char* name, uint8_t* bytearray, size_t size);
 uint8_t* print_hexarr(char* name, const char *hexString, size_t size);
 
-static bool debug = true;
+static bool debug = false;
 
 
 #endif

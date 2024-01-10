@@ -19,33 +19,34 @@ int main() {
     uint8_t public_key[32];
     uint8_t private_key[32];
     get_keys(mnemonic, passphrase, public_key, private_key);    
-    print_arr("public key", public_key, 32);
-    print_arr("private key", private_key, 32);
-    // size_t pubkey_len = sizeof(public_key)/sizeof(public_key);
+    print_arr("public key", public_key, 33);
+    print_arr("private key", private_key, 33);
+    size_t pubkey_len = sizeof(public_key)/sizeof(public_key[0]);
 
-    // // get signed txn
-    // uint8_t sig[64];
-    // ecdsa_sign_digest(&secp256k1, private_key, unsigned_txn_hash, sig, 0, 0);
-    // print_arr("signature", sig, 64);
-    // size_t sig_len = sizeof(sig)/sizeof(sig[0]);
+    // get signed txn
+    uint8_t sig[64];
+    ecdsa_sign_digest(&secp256k1, private_key, unsigned_txn_hash, sig, 0, 0);
+    print_arr("signature", sig, 64);
+    size_t sig_len = sizeof(sig)/sizeof(sig[0]);
 
-    // int result = ecdsa_verify_digest(&secp256k1, private_key,  sig, unsigned_txn_hash);
+    int result = ecdsa_verify_digest(&secp256k1, public_key,  sig, unsigned_txn_hash);
 
-    // if (result == 0) {
-    //     printf("Transaction signing successful.\n");
-    // } else {
-    //     fprintf(stderr, "Error: Transaction signing failed.\n");
-    // }
+    if (result == 0) {
+        printf("\nTransaction signing successful.\n");
+    } else {
+        fprintf(stderr, "\nError: Transaction signing failed at %d.\n", result);
+    }
 
-    // // generate script sig
+    // generate script sig
     // size_t scriptSig_len = (1 + sig_len + 1) + (1 + pubkey_len);
     // uint8_t scriptSig[scriptSig_len];
     // generate_script_sigz(sig, public_key, scriptSig, scriptSig_len, sig_len, pubkey_len);
     // print_arr("script sig", scriptSig, scriptSig_len);
 
-    // // get public key hash
+    // // // get public key hash
     // uint8_t pubkeyHash[SHA256_DIGEST_LENGTH];
-    // sha256_Raw(public_key, pubkey_len, pubkeyHash);
+    // ecdsa_get_pubkeyhash(public_key, HASHER_SHA2, pubkeyHash);
+    // print_arr("pubkeyHash", pubkeyHash, pubkey_len);
 
     // // generate script public key
     // size_t scriptPubKey_len = 3 + SHA256_DIGEST_LENGTH + 2;
@@ -69,6 +70,8 @@ int main() {
     // }
 
     free(unsigned_txn);
+
+    printf("\n");
 
     return 0;
 }

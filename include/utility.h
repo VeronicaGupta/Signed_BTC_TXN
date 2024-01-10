@@ -15,5 +15,7 @@ void generate_script_sigz(const uint8_t *signature, uint8_t* publicKey, uint8_t 
 void generate_scriptPubKey(const uint8_t *scriptSig, size_t scriptSigLen, uint8_t *scriptPubKey, uint8_t scriptPubKey_len);
 void concatenate_arrays(uint8_t *dest, const uint8_t *src1, size_t len1, const uint8_t *src2, size_t len2);
 int broadcast_transaction(uint8_t* signed_txn, uint8_t signed_txn_len);
+int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size);
+void node_details(HDNode node);
 
 #endif

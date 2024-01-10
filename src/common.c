@@ -46,7 +46,7 @@ uint8_t* print_arr(char* name, uint8_t* bytearray, size_t size){
         for (i = 0; i <size; ++i) {
             printf("%02x ", bytearray[i]);
         }
-        // printf("[%d]\n", i);
+        printf("[%d]\n", i);
     }
     return 0;
 }
