@@ -37,13 +37,14 @@ int main() {
         fprintf(stderr, "\nError: Transaction signing failed at %d.\n", result);
     }
 
-    // generate script sig
+    printf(uint8ToHexString(sig, sig_len));
+    // // generate script sig
     // size_t scriptSig_len = (1 + sig_len + 1) + (1 + pubkey_len);
     // uint8_t scriptSig[scriptSig_len];
     // generate_script_sigz(sig, public_key, scriptSig, scriptSig_len, sig_len, pubkey_len);
     // print_arr("script sig", scriptSig, scriptSig_len);
 
-    // // // get public key hash
+    // // get public key hash
     // uint8_t pubkeyHash[SHA256_DIGEST_LENGTH];
     // ecdsa_get_pubkeyhash(public_key, HASHER_SHA2, pubkeyHash);
     // print_arr("pubkeyHash", pubkeyHash, pubkey_len);

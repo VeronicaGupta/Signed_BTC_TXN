@@ -61,7 +61,7 @@ uint8_t* print_hexarr(char* name, const char *hexString, size_t size){
 
     hexToUint8(hexString, bytearray);
     
-    print_arr(name, bytearray, size);
+    // print_arr(name, bytearray, size);
 
     return bytearray;
 }
