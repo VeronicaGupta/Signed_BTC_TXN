@@ -61,7 +61,6 @@ void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key,
     print_arr("Calculat m/44'/1'/0'/0/0 public key", node.public_key, 32); 
     print_hexarr("Verified m/44'/1'/0'/0/0 public key", "025bf265a38b63a7cf085b2c91cc44f0908267910d6e0f9a75202f6f347f5a4889", 32);  
     print_arr("Calculat m/44'/1'/0'/0/0 private key", node.private_key, 32); 
-    print_hexarr("Verified m/44'/1'/0'/0/0 private key", "025bf265a38b63a7cf085b2c91cc44f0908267910d6e0f9a75202f6f347f5a4889", 32);
     printf("\nnode details: child_num[%02x] : depth[%02x]\n", node.child_num, node.depth);
 
     memcpy(public_key, node.public_key, 32);
