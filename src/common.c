@@ -14,21 +14,13 @@ void hexToUint8(const char *hexString, uint8_t *bytearray) {
     }
 }
 
-char* uint8ToHexString(const uint8_t *data, size_t size) {
-    char *hexString = (char *)malloc((size * 2 + 1) * sizeof(char)); // Each byte represented by 2 characters + '\0'
-
-    if (hexString == NULL) {
-        fprintf(stderr, "Memory allocation error\n");
-        exit(EXIT_FAILURE);
-    }
-
+void uint8ToHexString(const uint8_t *data, size_t size, char* hexstring) {
     for (size_t i = 0; i < size; ++i) {
-        sprintf(hexString + i * 2, "%02x", data[i]);
+        for (size_t i = 0; i < size; ++i) {
+            sprintf(hexstring + 2 * i, "%02x", data[i]);  // Each byte represented by 2 characters + '\0'
+        }
     }
-
-    hexString[size * 2] = '\0'; // Null-terminate the string
-
-    return hexString;
+    hexstring[size * 2] = '\0'; // Null-terminate the string
 }
 
 char* intToHex(int value) {
@@ -46,14 +38,12 @@ uint8_t* print_arr(char* name, uint8_t* bytearray, size_t size){
         for (i = 0; i <size; ++i) {
             printf("%02x ", bytearray[i]);
         }
-        printf("[%d]\n", i);
+        // printf("[%d]\n", i);
     }
     return 0;
 }
 
-uint8_t* print_hexarr(char* name, const char *hexString, size_t size){
-    uint8_t* bytearray = (uint8_t*) malloc(size);
-
+uint8_t* print_hexarr(char* name, const char *hexString, size_t size, uint8_t* bytearray){
     if (bytearray == NULL) {
         fprintf(stderr, "Error: Memory allocation failed.\n");
         exit(EXIT_FAILURE);
@@ -61,7 +51,7 @@ uint8_t* print_hexarr(char* name, const char *hexString, size_t size){
 
     hexToUint8(hexString, bytearray);
     
-    // print_arr(name, bytearray, size);
+    print_arr(name, bytearray, size);
 
     return bytearray;
 }

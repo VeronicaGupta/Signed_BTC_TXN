@@ -62,44 +62,41 @@ void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key,
     hdnode_private_ckd(&node, ADDRESS_IDX);
     hdnode_fill_public_key(&node);
     compare_keys("M441000_pubkey", node.public_key, m441000_pubkey, 33);
-    print_arr("M441000_privkey", node.private_key, 32); 
     node_details(node); 
 
-    memcpy(public_key, node.public_key, 32);
+    memcpy(public_key, node.public_key, 33);
     memcpy(private_key, node.private_key, 32);    
 }
 
-void generate_script_sigz(const uint8_t *signature, uint8_t* publicKey, uint8_t *scriptSig, uint8_t scriptSig_len, uint8_t sig_len, uint8_t pubkey_len){
-    // scriptSig: <sig> <pubKey>
+int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size){
+    uint8_t key2_arr[size];
+    
+    print_hexarr(name, key2, size, key2_arr);
 
-    scriptSig[0] = intToHex(sig_len + 1);  // Pushdata opcode <71 bytes
-    // print_arr("scriptSig[0]", scriptSig, 1);
-
-    memcpy(scriptSig + 1, signature, sig_len); // Signature
-    // print_arr("scriptSig[1+sig_len]", scriptSig, 1+sig_len);
-
-    scriptSig[1 + sig_len] = 0x01;  // Sighash
-    // print_arr("scriptSig[1+sig_len+1]", scriptSig, 1+sig_len+1);
-
-    scriptSig[1 + sig_len + 1] = intToHex(pubkey_len);  // Pushdata opcode <71 bytes
-    // print_arr("scriptSig[1+sig_len+2]", scriptSig, 1+sig_len+2);
-
-    memcpy(scriptSig + (1 + sig_len + 2), publicKey, pubkey_len); // PublicKey
-
-    // print_arr("scriptSig[1+sig_len+2+pubkey_len]", scriptSig, 1+sig_len+2+pubkey_len);
-
-    print_arr("scriptsig inside fn", scriptSig, scriptSig_len);
+    int result = memcmp(key1, key2_arr, size);
+    if (result==0){
+        printf("\n%s matched!\n", name);
+    } else {
+        printf("\n%s UNMATCHED :(\n", name);
+    }
 }
 
-void generate_scriptPubKey(const uint8_t *public_key, size_t pubkey_len, uint8_t *scriptPubKey, uint8_t scriptPubKey_len) {
-    // scriptPubKey: OP_DUP OP_HASH160 <pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
+void node_details(HDNode node){
+    // printf("\nnode details: child_num[%02x] : depth[%02x]\n", node.child_num, node.depth);
+}
 
-    scriptPubKey[0] = 0x76;  // OP_DUP
-    scriptPubKey[1] = 0xa9;  // OP_HASH160
-    scriptPubKey[2] = intToHex(pubkey_len);  // Pushdata opcode bytes len
-    memcpy(scriptPubKey + 3, public_key, pubkey_len);  // Copy the public key hash
-    scriptPubKey[3+pubkey_len+1] = 0x88;  // OP_EQUALVERIFY
-    scriptPubKey[3+pubkey_len+2] = 0xac;  // OP_CHECKSIG
+void generate_scriptSig(const uint8_t *signature, uint8_t *scriptSig, uint8_t* publicKey, uint8_t sig_len, uint8_t scriptSig_len, uint8_t pubkey_len){
+    // scriptSig: <opcode sig> <sig> <sig hash> <opcode pubkey> <pubKey>
+
+    memzero(scriptSig, scriptSig_len);
+
+    scriptSig[0] = intToHex(sig_len + 1);  // Pushdata opcode <71 bytes
+    memcpy(scriptSig + 1, signature, sig_len); // Signature
+    scriptSig[1 + sig_len] = 0x01;  // Sighash
+    scriptSig[1 + sig_len + 1] = intToHex(pubkey_len);  // Pushdata opcode <71 bytes
+    memcpy(scriptSig + (1 + sig_len + 2), publicKey, pubkey_len); // PublicKey
+
+    // print_arr("scriptsig inside fn", scriptSig, scriptSig_len);
 }
 
 void concatenate_arrays(uint8_t *dest, const uint8_t *src1, size_t len1, const uint8_t *src2, size_t len2) {
@@ -108,7 +105,8 @@ void concatenate_arrays(uint8_t *dest, const uint8_t *src1, size_t len1, const u
 }
 
 int broadcast_transaction(uint8_t* signed_txn, uint8_t signed_txn_len) {
-    const char *signed_txn_hex = uint8ToHexString(signed_txn, signed_txn_len);  // Replace with your signed transaction hex
+    const char signed_txn_hex[signed_txn_len*2+1];
+    uint8ToHexString(signed_txn, signed_txn_len, signed_txn_hex);  // Replace with your signed transaction hex
 
     // Construct the command to send via RPC
     char command[256];
@@ -119,17 +117,15 @@ int broadcast_transaction(uint8_t* signed_txn, uint8_t signed_txn_len) {
     return result;
 }
 
-int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size){
-    uint8_t *key2_arr = print_hexarr(name, key2, size);
+void generate_scriptPubKey(const uint8_t *public_key, size_t pubkey_len, uint8_t *scriptPubKey, uint8_t scriptPubKey_len) {
+    // scriptPubKey: OP_DUP OP_HASH160 <pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
 
-    int result = memcmp(key1, key2_arr, size);
-    if (result==0){
-        printf("%s matched!\n", name);
-    } else {
-        printf("%s UNMATCHED :(\n", name);
-    }
-}
+    memzero(scriptPubKey, scriptPubKey_len);
 
-void node_details(HDNode node){
-    // printf("\nnode details: child_num[%02x] : depth[%02x]\n", node.child_num, node.depth);
+    scriptPubKey[0] = 0x76;  // OP_DUP
+    scriptPubKey[1] = 0xa9;  // OP_HASH160
+    scriptPubKey[2] = intToHex(pubkey_len);  // Pushdata opcode bytes len
+    memcpy(scriptPubKey + 3, public_key, pubkey_len);  // Copy the public key hash
+    scriptPubKey[3+pubkey_len+1] = 0x88;  // OP_EQUALVERIFY
+    scriptPubKey[3+pubkey_len+2] = 0xac;  // OP_CHECKSIG
 }
