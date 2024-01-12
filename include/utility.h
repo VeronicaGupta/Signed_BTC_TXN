@@ -18,5 +18,6 @@ void concatenate_arrays(uint8_t *dest, const uint8_t *src1, size_t len1, const u
 int broadcast_transaction(uint8_t* signed_txn, uint8_t signed_txn_len);
 int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size);
 void node_details(HDNode node);
+void decode_raw_txn(uint8_t* unsigned_txn_hex);
 
 #endif
