@@ -217,7 +217,6 @@ void decode_raw_txn(uint8_t* rTx, TXN txn){
 }
 
 const char* verified_signed_txn="0200000001223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88110000006b483045022100ad14a660a926b92bbe8ced3350412d35dffa57db1cb3ea7a7df5f0a479fcdf1a0220117cdebba30f1db7eaa9a6978b05a59535ec757ba350149d3322dbbcac0c26af012102b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de29684902ffffffff0260ea0000000000001976a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac95a14200000000001976a91499ccf9022fe5173d2194659687382f235169bc5788ac00000000";
-// const char* signed_txn_short   ="1936b061386fe18b1c5f253b294d16d70d428ebaa357038765d99be99c659e57c58739139af2dd45b144c912542cc5549da70a952ccadc10056a826c5acb449a816c8301d002b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de296849";
 void prepare_signed_txn(uint8_t* unsigned_txn, uint8_t* scriptSig, uint8_t* signed_txn, size_t unsigned_txn_len, size_t scriptSig_len, size_t signed_txn_len){
     
     memzero(signed_txn, signed_txn_len);
@@ -240,26 +239,3 @@ void prepare_signed_txn(uint8_t* unsigned_txn, uint8_t* scriptSig, uint8_t* sign
     print_arr("signed txn", signed_txn, signed_txn_len);
     printf("\nverify txn[%d bytes] :%s\n", 226, verified_signed_txn);
 }
-
-// scriptSig[0] = intToHex(sig_len + 1);  // Pushdata opcode <71 bytes
-// memcpy(scriptSig + 1, signature, sig_len); // Signature
-// scriptSig[1 + sig_len] = 0x01;  // Sighash
-// scriptSig[1 + sig_len + 1] = intToHex(pubkey_len);  // Pushdata opcode <71 bytes
-// memcpy(scriptSig + (1 + sig_len + 2), publicKey, pubkey_len); // PublicKey
-
-
-
-
-// 6b
-// 48
-// 30
-// 45
-// 02
-// 21
-// 00ad14a660a926b92bbe8ced3350412d35dffa57db1cb3ea7a7df5f0a479fcdf1a
-// 02
-// 20
-// 117cdebba30f1db7eaa9a6978b05a59535ec757ba350149d3322dbbcac0c26af
-// 01
-// 21
-// 02b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de29684902
