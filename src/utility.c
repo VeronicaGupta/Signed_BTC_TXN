@@ -106,13 +106,11 @@ void concatenate_arrays(uint8_t *dest, const uint8_t *src1, size_t len1, const u
 
 int broadcast_transaction(uint8_t* signed_txn, uint8_t signed_txn_len) {
     const char signed_txn_hex[signed_txn_len*2+1];
-    uint8ToHexString(signed_txn, signed_txn_len, signed_txn_hex);  // Replace with your signed transaction hex
-
+    uint8ToHexString(signed_txn, signed_txn_len, signed_txn_hex);  
     // Construct the command to send via RPC
     char command[256];
     snprintf(command, sizeof(command), "bitcoin-cli sendrawtransaction %s", signed_txn_hex);
 
-    // Use system() to execute the command
     int result = system(command);
     return result;
 }
@@ -186,6 +184,8 @@ void decode_raw_txn(uint8_t* rTx){
     i+=r; r=4; memcpy(&txn.sequence, rTx + i, r);
     i+=r; r=1; memcpy(&txn.outputs, rTx + i, r);
 
+    printf("\n-----------------TXN-----------------------");
+
     print_arr("Version", &txn.version, 4);
     print_arr("Inputs", &txn.inputs, 1);
     print_arr("Txid", &txn.txid, il);
@@ -214,16 +214,5 @@ void decode_raw_txn(uint8_t* rTx){
     i+=r;r=4; memcpy(&txn.locktime, rTx + i, r);
     print_arr("Locktime", &txn.locktime, 4);
 
-    // print_arr("Version", &txn.version, 4);
-    // print_arr("Inputs", &txn.inputs, 1);
-    // print_arr("Txid", &txn.txid, il);
-    // print_arr("Vout", &txn.vout, 4);
-    // print_arr("ScriptSigSize", &txn.scriptsigsize, 1);
-    // print_arr("ScriptSig", &txn.scriptsig, sl);
-    // print_arr("Sequence", &txn.sequence, 4);
-    // print_arr("Outputs", &txn.outputs, 1);
-    // print_arr("Amount", &txn.amount, vl);
-    // print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
-    // print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
-    // print_arr("Locktime", &txn.locktime, 4);
+    printf("-----------------END TXN--------------------\n");
 }

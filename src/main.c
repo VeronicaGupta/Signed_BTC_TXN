@@ -81,24 +81,24 @@ int main() {
     // *******************************************//
 
     // // generate signed txn hex
-    // size_t signed_txn_len = (1 + sig_len + 1) + (1 + pubkey_len);
-    // uint8_t signed_txn[signed_txn_len];
-    // concatenate_arrays(signed_txn, unsigned_txn, unsigned_txn_len, sig, sig_len);
-    // print_arr("signed txn", signed_txn, signed_txn_len);
+    size_t signed_txn_len = (1 + sig_len + 1) + (1 + pubkey_len);
+    uint8_t signed_txn[signed_txn_len];
+    concatenate_arrays(signed_txn, unsigned_txn, unsigned_txn_len, sig, sig_len);
+    print_arr("signed txn", signed_txn, signed_txn_len);
 
     // char signed_txn_hex[signed_txn_len * 2 + 1];
     // uint8ToHexString(signed_txn, signed_txn_len, signed_txn_hex);
     // printf("\nsigned txn hex[%d] : %s", strlen(signed_txn_hex), signed_txn_hex); // signed txn hex for broadcast
     // printf("\nunsigned txn hex[%d] : %s", strlen(unsigned_txn_hex), unsigned_txn_hex);
 
-    // // broadcast signed txn
-    // result = broadcast_transaction(signed_txn, signed_txn_len);
+    // broadcast signed txn
+    result = broadcast_transaction(signed_txn, signed_txn_len);
 
-    // if (result == 0) {
-    //     printf("Transaction broadcast successful.\n");
-    // } else {
-    //     fprintf(stderr, "Error: Transaction broadcast failed.\n");
-    // }
+    if (result == 0) {
+        printf("Transaction broadcast successful.\n");
+    } else {
+        fprintf(stderr, "Error: Transaction broadcast failed.\n");
+    }
 
     return 0;
 }
