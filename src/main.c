@@ -11,8 +11,8 @@ int main() {
     uint8_t public_key[33];
     uint8_t private_key[32];
     get_keys(mnemonic, passphrase, public_key, private_key);    
-    print_arr("public key", public_key, 33); // of address node
-    print_arr("private key", private_key, 32); // of address node
+    print_arr("public key", public_key, 33); // of the input address of the unsigned txn
+    print_arr("private key", private_key, 32); // of the input address of the unsigned txn
     size_t pubkey_len = sizeof(public_key)/sizeof(public_key[0]);
 
     // get public key hash of the address
@@ -34,36 +34,29 @@ int main() {
 
     // get double hashed unsigned txn digest 
     uint8_t unsigned_txn_hash[SHA256_DIGEST_LENGTH];
-    doubleHash(unsigned_txn, unsigned_txn_hash, unsigned_txn_len);   
+    hash256(unsigned_txn, unsigned_txn_hash, unsigned_txn_len);   
     print_arr("unsigned txn double hashed", unsigned_txn_hash, SHA256_DIGEST_LENGTH);
-
-
-    // ***************Format TXN****************************//
-
-    decode_raw_txn(unsigned_txn);
-
-    // change the recipient address
-    const char* txn_hash = "bb3b19f20854a95986a5eae8fc65da7558c4315629c225aba1910114e1c00552";
-    const char* non_spendable_wallet_address = "n1LYuAfFp4qvF5SqTxiUWMUasRvSQAWhAs"; // m/44'/1'/0'/0/0
-    const char* new_recipient_wallet_address = "muYBEA1o1VinmXQnpdPY9YaUGCqdLJgR42"; //m/44'/1'/0'/1/0 // internal change address
-
-    // ecdsa_address_decode(non_spendable_wallet_address, )
 
 
     // ***************Sig, UnLock and Lock Script****************************//
 
     // get signature
-    uint8_t sig[64];
-    ecdsa_sign_digest(&secp256k1, private_key, unsigned_txn_hash, sig, 0, 0);
-    print_arr("signature", sig, 64);
+    uint8_t sig_raw[64];
+    ecdsa_sign_digest(&secp256k1, private_key, unsigned_txn_hash, sig_raw, 0, 0);
+    print_arr("signature raw", sig_raw, 64);
 
-    int result = ecdsa_verify_digest(&secp256k1, public_key,  sig, unsigned_txn_hash);
+    int result = ecdsa_verify_digest(&secp256k1, public_key,  sig_raw, unsigned_txn_hash);
 
     if (result == 0) {
         printf("Transaction signing successful.\n");
     } else {
         fprintf(stderr, "Error: Transaction signing failed at %d.\n", result);
     }
+
+    uint8_t* sig[71];
+    memzero(sig, 71);
+    ecdsa_sig_to_der(sig_raw, sig);
+    print_arr("signature", sig, 71);
 
     // generate scriptSig (INPUT)   
     size_t sig_len = sizeof(sig)/sizeof(sig[0]);
@@ -80,11 +73,21 @@ int main() {
 
     // *******************************************//
 
-    // // generate signed txn hex
-    size_t signed_txn_len = (1 + sig_len + 1) + (1 + pubkey_len);
+    // ***************signed TXN****************************//
+
+    size_t signed_txn_len = 4+(1+(32+4+1+scriptSig_len+4))+(1+2*(8+1+25))+4;
     uint8_t signed_txn[signed_txn_len];
-    concatenate_arrays(signed_txn, unsigned_txn, unsigned_txn_len, sig, sig_len);
-    print_arr("signed txn", signed_txn, signed_txn_len);
+    prepare_signed_txn(unsigned_txn, scriptSig, signed_txn, unsigned_txn_len, scriptSig_len, signed_txn_len);
+
+    // change the recipient address
+    // const char* prev_txn_id = "888c15ff9489ac5c545d643b8252d7fde69736e3de2bec45ed8759da37bf3e22";
+    // const char* non_spendable_wallet_address = "n1LYuAfFp4qvF5SqTxiUWMUasRvSQAWhAs"; // m/44'/1'/0'/0/0
+    // const char* new_recipient_wallet_address = "muYBEA1o1VinmXQnpdPY9YaUGCqdLJgR42"; //m/44'/1'/0'/1/0 // internal change address
+
+    // size_t signed_txn_len = (1 + sig_len + 1) + (1 + pubkey_len);
+    // uint8_t signed_txn[signed_txn_len];
+    // concatenate_arrays(signed_txn, unsigned_txn, unsigned_txn_len, sig, sig_len);
+    // print_arr("signed txn", signed_txn, signed_txn_len);
 
     // char signed_txn_hex[signed_txn_len * 2 + 1];
     // uint8ToHexString(signed_txn, signed_txn_len, signed_txn_hex);
@@ -92,13 +95,20 @@ int main() {
     // printf("\nunsigned txn hex[%d] : %s", strlen(unsigned_txn_hex), unsigned_txn_hex);
 
     // broadcast signed txn
-    result = broadcast_transaction(signed_txn, signed_txn_len);
+    // result = broadcast_transaction(signed_txn, signed_txn_len);
 
-    if (result == 0) {
-        printf("Transaction broadcast successful.\n");
-    } else {
-        fprintf(stderr, "Error: Transaction broadcast failed.\n");
-    }
+    // if (result == 0) {
+    //     printf("Transaction broadcast successful.\n");
+    // } else {
+    //     fprintf(stderr, "Error: Transaction broadcast failed.\n");
+    // }
 
     return 0;
 }
+
+const char* x="3044022061386fe18b1c5f253b294d16d70d428ebaa357038765d99be99c659e57c587390220139af2dd45b144c912542cc5549da70a952ccadc10056a826c5acb449a816c83";
+
+// 19
+// 36
+// b0
+// 61386fe18b1c5f253b294d16d70d428ebaa357038765d99be99c659e57c58739139af2dd45b144c912542cc5549da70a952ccadc10056a826c5acb449a816c8301d002b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de296849
