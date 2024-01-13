@@ -20,9 +20,10 @@ const char* m441000_pubkey = "02b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2
 
 
 const int il= 32; // id len
-const int sl = 25; // script len
+const int sl = 25; // scriptSig unsigned txn len
 const int vl = 8; // val len
-const int ssl = 107; // script len
+const int ssl = 107; // scriptSig signed txn len
+
 
 typedef struct {
     uint32_t version; // 01000000
@@ -142,164 +143,16 @@ void generate_scriptSig(const uint8_t *signature, uint8_t *scriptSig, uint8_t* p
     // print_arr("scriptsig inside fn", scriptSig, scriptSig_len);
 }
 
-void decode_raw_txn(uint8_t* rTx, TXN txn);
-void decode_raw_txn(uint8_t* rTx, TXN txn){
-    // 01
-
-    // 223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88
-    // 11000000
-    // 19
-    // 76a914d96ad3c56a2d03446c0192712119b6741d3d9ee788ac
-    // ffffffff
-
-    // 02
-
-    // 60ea000000000000
-    // 19
-    // 76a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac
-
-    // 95a1420000000000
-    // 19
-    // 76a91499ccf9022fe5173d2194659687382f235169bc5788ac
-
-    // 00000000
-
-    int i = 0; // index
-    int r = 0; // range
-    
-    i+=r; r=4; memcpy(&txn.version, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.inputs, rTx + i, r);
-    i+=r; r=il; memcpy(&txn.txid, rTx + i, r);
-    i+=r; r=4; memcpy(&txn.vout, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.scriptsigsize, rTx + i, r);
-    i+=r; r=sl; memcpy(&txn.scriptsig, rTx + i, r);
-    i+=r; r=4; memcpy(&txn.sequence, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.outputs, rTx + i, r);
-
-    printf("\n-----------------TXN-----------------------");
-
-    // print_arr("Version", &txn.version, 4);
-    // print_arr("Inputs", &txn.inputs, 1);
-    // print_arr("Txid", &txn.txid, il);
-    // print_arr("Vout", &txn.vout, 4);
-    print_arr("ScriptSigSize", &txn.scriptsigsize, 1);
-    print_arr("ScriptSig", &txn.scriptsig, sl);
-    // print_arr("Sequence", &txn.sequence, 4);
-    // print_arr("Outputs", &txn.outputs, 1);
-
-    // i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
-    // i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
-    // i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
-
-    print_arr("Amount", &txn.amount, vl);
-    print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
-    print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
-
-    i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
-    i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
-
-    // print_arr("Amount", &txn.amount, vl);
-    // print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
-    // print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
-
-    i+=r;r=4; memcpy(&txn.locktime, rTx + i, r);
-    i+=r;r=4; memcpy(&txn.sighash, rTx + i, r);
-    // print_arr("Locktime", &txn.locktime, 4);
-
-    printf("-----------------END TXN--------------------\n");
-}
-
-void decode_raw_stxn(uint8_t* rTx, Script_TXN txn);
-void decode_raw_stxn(uint8_t* rTx, Script_TXN txn){
-    int i = 0; // index
-    int r = 0; // range
-    
-    i+=r; r=4; memcpy(&txn.version, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.inputs, rTx + i, r);
-    i+=r; r=il; memcpy(&txn.txid, rTx + i, r);
-    i+=r; r=4; memcpy(&txn.vout, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.scriptsigsize, rTx + i, r);
-    i+=r; r=ssl; memcpy(&txn.scriptsig, rTx + i, r);
-    i+=r; r=4; memcpy(&txn.sequence, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.outputs, rTx + i, r);
-
-    printf("\n-----------------sTXN-----------------------");
-
-    // print_arr("Version", &txn.version, 4);
-    // print_arr("Inputs", &txn.inputs, 1);
-    // print_arr("Txid", &txn.txid, il);
-    // print_arr("Vout", &txn.vout, 4);
-    print_arr("ScriptSigSize", &txn.scriptsigsize, 1);
-    print_arr("ScriptSig", &txn.scriptsig, sl);
-    // print_arr("Sequence", &txn.sequence, 4);
-    // print_arr("Outputs", &txn.outputs, 1);
-
-    i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
-    i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
-
-    // print_arr("Amount", &txn.amount, vl);
-    // print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
-    // print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
-
-    i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
-    i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
-    i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
-
-    // print_arr("Amount", &txn.amount, vl);
-    // print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
-    // print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
-
-    i+=r;r=4; memcpy(&txn.locktime, rTx + i, r);
-    // print_arr("Locktime", &txn.locktime, 4);
-
-    printf("-----------------END sTXN--------------------\n");
-}
-
-const char* verified_signed_txn="0200000001223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88110000006b483045022100ad14a660a926b92bbe8ced3350412d35dffa57db1cb3ea7a7df5f0a479fcdf1a0220117cdebba30f1db7eaa9a6978b05a59535ec757ba350149d3322dbbcac0c26af012102b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de29684902ffffffff0260ea0000000000001976a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac95a14200000000001976a91499ccf9022fe5173d2194659687382f235169bc5788ac0000000001000000";
-
-void prepare_signed_txn(uint8_t* unsigned_txn, uint8_t* scriptSig, uint8_t* signed_txn, size_t unsigned_txn_len, size_t scriptSig_len, size_t signed_txn_len){
-    
-    memzero(signed_txn, signed_txn_len);
-
-    TXN tx;
-    // decode_raw_txn(unsigned_txn, tx);
-    // int scriptSig_start_idx = (sizeof(tx.version)+sizeof(tx.inputs)+sizeof(tx.txid)+sizeof(tx.vout))/sizeof(uint8_t);
-    // int scriptSig_stop_size = scriptSig_start_idx+sizeof(tx.scriptsig)/sizeof(uint8_t)+1;
-    // int end_packet_size = unsigned_txn_len-scriptSig_stop_size;
-
-    // memcpy(signed_txn, unsigned_txn, scriptSig_start_idx);    
-    // memcpy(signed_txn+scriptSig_start_idx, scriptSig_len, 1);
-    // memcpy(signed_txn+scriptSig_start_idx+1, scriptSig, scriptSig_len);
-    // memcpy(signed_txn+scriptSig_start_idx+1+scriptSig_len,unsigned_txn+scriptSig_stop_size, end_packet_size);
-    
-    // Script_TXN txn;
-    // decode_raw_stxn(signed_txn, txn);
-
-    int start_idx = 4+1+il+4+1;
-    int mid_idx = start_idx+scriptSig_len;
-    int end_len = 4+1+2*(vl+1+sl)+4+4;
+void prepare_final_txn(uint8_t* unsigned_txn, uint8_t* packet, uint8_t* final_txn, size_t unsigned_txn_len, size_t packet_len, size_t final_txn_len, int start_len, int end_len){
+    int mid_idx = start_len+packet_len;    
     int end_idx = unsigned_txn_len-end_len;
 
+    memzero(final_txn, final_txn_len);    
 
-    int sign_txn_len=mid_idx+end_len;
-    uint8_t sign_txn[sign_txn_len];
-    memzero(sign_txn, sign_txn_len);
-
-    memcpy(sign_txn, unsigned_txn, start_idx);
-    sign_txn[start_idx-1] = scriptSig_len;
-    memcpy(sign_txn+start_idx, scriptSig, scriptSig_len);
-    memcpy(sign_txn+mid_idx, unsigned_txn+end_idx, end_len);
-    
-
-    print_arr("unsigned txn", unsigned_txn, unsigned_txn_len);
-    print_arr("new scriptSig", scriptSig, scriptSig_len);
-    print_arr("signed txn", sign_txn, sign_txn_len);
-    printf("\nverify txn[%d bytes]: %s\n\n", 226, verified_signed_txn);
-
-    compare_keys("sign", sign_txn, verified_signed_txn, 226);
-
+    memcpy(final_txn, unsigned_txn, start_len);
+    final_txn[start_len-1] = packet_len;
+    memcpy(final_txn+start_len, packet, packet_len);
+    memcpy(final_txn+mid_idx, unsigned_txn+end_idx, end_len);
 }
 
 void generate_scriptPubKey(const uint8_t *public_key_hash, size_t pubkeyhash_len, uint8_t *scriptPubKey, uint8_t scriptPubKey_len) {
@@ -315,35 +168,117 @@ void generate_scriptPubKey(const uint8_t *public_key_hash, size_t pubkeyhash_len
     scriptPubKey[3+pubkeyhash_len+1] = 0xac;  // OP_CHECKSIG
 }
 
+// void decode_raw_txn(uint8_t* rTx, TXN txn);
+// void decode_raw_txn(uint8_t* rTx, TXN txn){
+//     // 01
 
-// const char* x = "223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88";
+//     // 223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88
+//     // 11000000
+//     // 19
+//     // 76a914d96ad3c56a2d03446c0192712119b6741d3d9ee788ac
+//     // ffffffff
 
+//     // 02
 
-// 02000000
-// 01
-// 223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88
-// 11000000
-// 6b
-// [
-// 48
-// 30
-// 45
-// 02
-// 21
-// 00ad14a660a926b92bbe8ced3350412d35dffa57db1cb3ea7a7df5f0a479fcdf1a
-// 02
-// 20
-// 117cdebba30f1db7eaa9a6978b05a59535ec757ba350149d3322dbbcac0c26af
-// 01
-// 21
-// 02b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de29684902
-// ]
-// ffffffff
-// 02
-// 60ea000000000000
-// 19
-// 76a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac
-// 95a142000000000
-// 19
-// 76a91499ccf9022fe5173d2194659687382f235169bc5788ac
-// 00000000
+//     // 60ea000000000000
+//     // 19
+//     // 76a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac
+
+//     // 95a1420000000000
+//     // 19
+//     // 76a91499ccf9022fe5173d2194659687382f235169bc5788ac
+
+//     // 00000000
+
+//     int i = 0; // index
+//     int r = 0; // range
+    
+//     i+=r; r=4; memcpy(&txn.version, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.inputs, rTx + i, r);
+//     i+=r; r=il; memcpy(&txn.txid, rTx + i, r);
+//     i+=r; r=4; memcpy(&txn.vout, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.scriptsigsize, rTx + i, r);
+//     i+=r; r=sl; memcpy(&txn.scriptsig, rTx + i, r);
+//     i+=r; r=4; memcpy(&txn.sequence, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.outputs, rTx + i, r);
+
+//     printf("\n-----------------TXN-----------------------");
+
+//     // print_arr("Version", &txn.version, 4);
+//     // print_arr("Inputs", &txn.inputs, 1);
+//     // print_arr("Txid", &txn.txid, il);
+//     // print_arr("Vout", &txn.vout, 4);
+//     print_arr("ScriptSigSize", &txn.scriptsigsize, 1);
+//     print_arr("ScriptSig", &txn.scriptsig, sl);
+//     // print_arr("Sequence", &txn.sequence, 4);
+//     // print_arr("Outputs", &txn.outputs, 1);
+
+//     // i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
+//     // i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
+//     // i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
+
+//     print_arr("Amount", &txn.amount, vl);
+//     print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
+//     print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
+
+//     i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
+//     i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
+
+//     // print_arr("Amount", &txn.amount, vl);
+//     // print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
+//     // print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
+
+//     i+=r;r=4; memcpy(&txn.locktime, rTx + i, r);
+//     i+=r;r=4; memcpy(&txn.sighash, rTx + i, r);
+//     // print_arr("Locktime", &txn.locktime, 4);
+
+//     printf("-----------------END TXN--------------------\n");
+// }
+
+// void decode_raw_stxn(uint8_t* rTx, Script_TXN txn);
+// void decode_raw_stxn(uint8_t* rTx, Script_TXN txn){
+//     int i = 0; // index
+//     int r = 0; // range
+    
+//     i+=r; r=4; memcpy(&txn.version, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.inputs, rTx + i, r);
+//     i+=r; r=il; memcpy(&txn.txid, rTx + i, r);
+//     i+=r; r=4; memcpy(&txn.vout, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.scriptsigsize, rTx + i, r);
+//     i+=r; r=ssl; memcpy(&txn.scriptsig, rTx + i, r);
+//     i+=r; r=4; memcpy(&txn.sequence, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.outputs, rTx + i, r);
+
+//     printf("\n-----------------sTXN-----------------------");
+
+//     // print_arr("Version", &txn.version, 4);
+//     // print_arr("Inputs", &txn.inputs, 1);
+//     // print_arr("Txid", &txn.txid, il);
+//     // print_arr("Vout", &txn.vout, 4);
+//     print_arr("ScriptSigSize", &txn.scriptsigsize, 1);
+//     print_arr("ScriptSig", &txn.scriptsig, sl);
+//     // print_arr("Sequence", &txn.sequence, 4);
+//     // print_arr("Outputs", &txn.outputs, 1);
+
+//     i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
+//     i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
+
+//     // print_arr("Amount", &txn.amount, vl);
+//     // print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
+//     // print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
+
+//     i+=r; r=vl; memcpy(&txn.amount, rTx + i, r);
+//     i+=r; r=1; memcpy(&txn.scriptpubkeysize, rTx + i, r);
+//     i+=r; r=sl; memcpy(&txn.scriptpubkey, rTx + i, r);
+
+//     // print_arr("Amount", &txn.amount, vl);
+//     // print_arr("ScriptPubKeySize", &txn.scriptpubkeysize, 1);
+//     // print_arr("ScriptPubKey", &txn.scriptpubkey, sl);
+
+//     i+=r;r=4; memcpy(&txn.locktime, rTx + i, r);
+//     // print_arr("Locktime", &txn.locktime, 4);
+
+//     printf("-----------------END sTXN--------------------\n");
+// }

@@ -10,6 +10,7 @@
 #include "trezor-crypto/hasher.h"
 #include "trezor-crypto/memzero.h"
 
+
 void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key, uint8_t* private_key);
 int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size);
 void node_details(HDNode node);
@@ -23,5 +24,6 @@ void concatenate_arrays(uint8_t *dest, const uint8_t *src1, size_t len1, const u
 int broadcast_transaction(uint8_t* signed_txn, uint8_t signed_txn_len);
 
 void prepare_signed_txn(uint8_t* unsigned_txn, uint8_t* scriptSig, uint8_t* signed_txn, size_t unsigned_txn_len, size_t scriptSig_len, size_t signed_txn_len);
-
+void prepare_final_txn(uint8_t* unsigned_txn, uint8_t* packet, uint8_t* final_txn, size_t unsigned_txn_len, size_t packet_len, size_t final_txn_len, int start_len, int end_len);
+  
 #endif
