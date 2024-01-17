@@ -11,10 +11,11 @@
 #include "trezor-crypto/memzero.h"
 
 
-void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key, uint8_t* private_key);
-int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size);
+void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key, uint8_t* private_key,
+                size_t publickey_len, size_t privkey_len, uint32_t purpose, uint32_t coin_type, 
+                uint32_t account, uint32_t change, uint32_t address_idx);
+                int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size);
 void node_details(HDNode node);
-
 void hash256(const uint8_t *data, uint8_t *output, size_t size);
 
 void generate_scriptSig(const uint8_t *signature, uint8_t *scriptSig, uint8_t* publicKey, size_t sig_len, size_t scriptSig_len, size_t pubkey_len);

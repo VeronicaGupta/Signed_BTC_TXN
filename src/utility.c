@@ -1,12 +1,5 @@
 #include "utility.h"
 
-// Constants for HD path
-#define PURPOSE     0x8000002C // 44 Bitcoin
-#define COIN_TYPE   0x80000001  // 1 Bitcoin testnet external
-#define ACCOUNT     0x80000000 
-#define CHANGE      0x00000000
-#define ADDRESS_IDX 0x00000000
-
 const char* hash1 = "d2d3b3c385d276a68e6487859d3a82d6b966bbc5ecf0f5231e39304f8a1c26ec";
 const char* hash2 = "2fcd6fb2835518528d7d1f396c2f61899be99f829eff0b0900c3e5702cb91391";
 const char* vseed = "2990a761daa2249c91ae98acf56ecf558876f6aa566e1e6e025996f12c830b793d87dde3f68cf9138fbe041bb75ba500c8eadee43d3ce2c95f84f89925bf8db5";
@@ -71,7 +64,9 @@ void hash256(const uint8_t *data, uint8_t *output, size_t size) {
     compare_keys("Unsign_txn hash2", output, hash2, SHA256_DIGEST_LENGTH);
 }
 
-void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key, uint8_t* private_key){
+void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key, uint8_t* private_key,
+                size_t publickey_len, size_t privkey_len, uint32_t purpose, uint32_t coin_type, 
+                uint32_t account, uint32_t change, uint32_t address_idx) {
     uint8_t seed[64];
     mnemonic_to_seed(mnemonic, passphrase, seed, 0);
     compare_keys("Seed", seed, vseed, 64);
@@ -79,39 +74,38 @@ void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key,
     HDNode node;
     hdnode_from_seed(seed, 64, "secp256k1", &node);
     hdnode_fill_public_key(&node);
-    compare_keys("Master_pubkey", node.public_key, m_pubkey, 33);
-    compare_keys("Master_chaincode", node.chain_code, m_chaincode, 32); 
+    compare_keys("Master_pubkey", node.public_key, m_pubkey, publickey_len);
+    compare_keys("Master_chaincode", node.chain_code, m_chaincode, privkey_len); 
     node_details(node);    
 
-    hdnode_private_ckd(&node, PURPOSE);
+    hdnode_private_ckd(&node, purpose);
     hdnode_fill_public_key(&node); 
-    compare_keys("M44_pubkey", node.public_key, m44_pubkey, 33);
+    compare_keys("M44_pubkey", node.public_key, m44_pubkey, publickey_len);
     node_details(node); 
 
-    hdnode_private_ckd(&node, COIN_TYPE);
+    hdnode_private_ckd(&node, coin_type);
     hdnode_fill_public_key(&node);
-    compare_keys("M441_pubkey", node.public_key, m441_pubkey, 33);
+    compare_keys("M441_pubkey", node.public_key, m441_pubkey, publickey_len);
     node_details(node); 
 
-    hdnode_private_ckd(&node, ACCOUNT);
+    hdnode_private_ckd(&node, account);
     hdnode_fill_public_key(&node);
-    compare_keys("M4410_pubkey", node.public_key, m4410_pubkey, 33);
+    compare_keys("M4410_pubkey", node.public_key, m4410_pubkey, publickey_len);
     node_details(node); 
 
-    hdnode_private_ckd(&node, CHANGE);
+    hdnode_private_ckd(&node, change);
     hdnode_fill_public_key(&node);
-    compare_keys("M44100_pubkey", node.public_key, m44100_pubkey, 33);
+    compare_keys("M44100_pubkey", node.public_key, m44100_pubkey, publickey_len);
     node_details(node); 
 
-    hdnode_private_ckd(&node, ADDRESS_IDX);
+    hdnode_private_ckd(&node, address_idx);
     hdnode_fill_public_key(&node);
-    compare_keys("M441000_pubkey", node.public_key, m441000_pubkey, 33);
+    compare_keys("M441000_pubkey", node.public_key, m441000_pubkey, publickey_len);
     node_details(node); 
 
-    memcpy(public_key, node.public_key, 33);
-    memcpy(private_key, node.private_key, 32);    
+    memcpy(public_key, node.public_key, publickey_len);
+    memcpy(private_key, node.private_key, privkey_len);    
 }
-
 int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size){
     uint8_t key2_arr[size];
     
@@ -153,6 +147,8 @@ void prepare_final_txn(uint8_t* unsigned_txn, uint8_t* packet, uint8_t* final_tx
     final_txn[start_len-1] = packet_len;
     memcpy(final_txn+start_len, packet, packet_len);
     memcpy(final_txn+mid_idx, unsigned_txn+end_idx, end_len);
+
+
 }
 
 void generate_scriptPubKey(const uint8_t *public_key_hash, size_t pubkeyhash_len, uint8_t *scriptPubKey, uint8_t scriptPubKey_len) {
@@ -163,7 +159,7 @@ void generate_scriptPubKey(const uint8_t *public_key_hash, size_t pubkeyhash_len
     scriptPubKey[0] = 0x76;  // OP_DUP
     scriptPubKey[1] = 0xa9;  // OP_HASH160
     scriptPubKey[2] = pubkeyhash_len;  // Pushdata opcode bytes len
-    // memcpy(scriptPubKey + 3, public_key_hash, pubkeyhash_len);  // public key hash
+    memcpy(scriptPubKey + 3, public_key_hash, pubkeyhash_len);  // public key hash
     scriptPubKey[3+pubkeyhash_len] = 0x88;  // OP_EQUALVERIFY
     scriptPubKey[3+pubkeyhash_len+1] = 0xac;  // OP_CHECKSIG
 }
@@ -282,3 +278,24 @@ void generate_scriptPubKey(const uint8_t *public_key_hash, size_t pubkeyhash_len
 
 //     printf("-----------------END sTXN--------------------\n");
 // }
+
+// 02000000
+// 01
+
+// b51b69ce81f857ede9791dd67cddd25f7b1690b0cf04dc4ca79f570c59cc1551
+// 01000000
+// 19
+
+// 76a91499ccf9022fe5173d2194659687382f235169bc5788ac
+// ffffffff
+// 02
+
+// 60ea000000000000
+// 19
+// 76a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac
+// 15
+// a9410000000000
+// 19
+// 76a914a21ba3c5f5a4f7652db388eabcbc2048f8eaa9a088ac
+// 00000000
+// 01000000
