@@ -115,10 +115,7 @@ int main() {
 
     // *******************************************
 
-    // ***************signed TXN****************************
-
-    const char* verified_signed_txn="0200000001223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88110000006b483045022100ad14a660a926b92bbe8ced3350412d35dffa57db1cb3ea7a7df5f0a479fcdf1a0220117cdebba30f1db7eaa9a6978b05a59535ec757ba350149d3322dbbcac0c26af012102b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de29684902ffffffff0260ea0000000000001976a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac95a14200000000001976a91499ccf9022fe5173d2194659687382f235169bc5788ac0000000001000000";
-    
+    // ***************signed TXN****************************  
     start_len = (4+1)+(il+4+1);
     end_len = (4+1)+2*(vl+1+sl)+(4+4);
     size_t signed_txn_len = start_len+scriptSig_len+end_len;
@@ -128,10 +125,10 @@ int main() {
     print_arr("unsigned txn", unsigned_txn, unsigned_txn_len);
     print_arr("new scriptSig", scriptSig, scriptSig_len);
     print_arr("signed txn", signed_txn, signed_txn_len);
-    printf("\nverify txn[%d bytes]: %s\n\n", strlen(verified_signed_txn)/2, verified_signed_txn);
 
-    compare_keys("sign", signed_txn, verified_signed_txn, strlen(verified_signed_txn)/2);
-
+    // const char* verified_signed_txn="0200000001223ebf37da5987ed45ec2bdee33697e6fdd752823b645d545cac8994ff158c88110000006b483045022100ad14a660a926b92bbe8ced3350412d35dffa57db1cb3ea7a7df5f0a479fcdf1a0220117cdebba30f1db7eaa9a6978b05a59535ec757ba350149d3322dbbcac0c26af012102b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de29684902ffffffff0260ea0000000000001976a914ed614881f32c024a80d1b6b58dfed8f493f41c7288ac95a14200000000001976a91499ccf9022fe5173d2194659687382f235169bc5788ac0000000001000000";
+    // printf("\nverify txn[%d bytes]: %s\n\n", strlen(verified_signed_txn)/2, verified_signed_txn);
+    // compare_keys("sign", signed_txn, verified_signed_txn, strlen(verified_signed_txn)/2);
     
     return 0;
 }

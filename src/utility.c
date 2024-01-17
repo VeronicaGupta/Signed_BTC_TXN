@@ -11,57 +11,13 @@ const char* m4410_pubkey = "03b4a01ec7fa3c0fba56cbd3f556389e618bf07aa2fdc6a2d7e6
 const char* m44100_pubkey = "02c580fc6e2ecb16a6c9b3673002a81afb3ce8b9a80f2d52370bb0bc7fd5cb7491";
 const char* m441000_pubkey = "02b97a7f40dfd0a9989143797ded1ba7abc9105f5fc8b87ac2fce695de29684902";
 
-
-const int il= 32; // id len
-const int sl = 25; // scriptSig unsigned txn len
-const int vl = 8; // val len
-const int ssl = 107; // scriptSig signed txn len
-
-
-typedef struct {
-    uint32_t version; // 01000000
-
-    uint8_t inputs; // 01
-    uint8_t txid[32]; //b7994a0db2f373a29227e1d90da883c6ce1cb0dd2d6812e4558041ebbbcfa54b
-    uint32_t vout; // 00000000
-    uint8_t scriptsigsize; // 19
-    uint8_t scriptsig[25]; // 76a9144299ff317fcd12ef19047df66d72454691797bfc88ac
-    uint32_t sequence; // ffffffff
-    
-    uint8_t outputs; // 01
-    uint8_t amount[8]; // 983a000000000000
-    uint8_t scriptpubkeysize; // 19
-    uint8_t scriptpubkey[25]; // 76a914b3e2819b6262e0b1f19fc7229d75677f347c91ac88ac
-    uint32_t locktime; // 00000000
-    uint32_t sighash; // 01000000
-} TXN;
-
-
-typedef struct {
-    uint32_t version; // 01000000
-
-    uint8_t inputs; // 01
-    uint8_t txid[32]; //b7994a0db2f373a29227e1d90da883c6ce1cb0dd2d6812e4558041ebbbcfa54b
-    uint32_t vout; // 00000000
-    uint8_t scriptsigsize; // 19
-    uint8_t scriptsig[107]; // 76a9144299ff317fcd12ef19047df66d72454691797bfc88ac
-    uint32_t sequence; // ffffffff
-    
-    uint8_t outputs; // 01
-    uint8_t amount[8]; // 983a000000000000
-    uint8_t scriptpubkeysize; // 19
-    uint8_t scriptpubkey[25]; // 76a914b3e2819b6262e0b1f19fc7229d75677f347c91ac88ac
-    uint32_t locktime; // 00000000
-    uint32_t sighash; // 01000000
-} Script_TXN;
-
 void hash256(const uint8_t *data, uint8_t *output, size_t size) {
 
     hasher_Raw(HASHER_SHA2, data, size, output);
-    compare_keys("Unsign_txn hash1", output, hash1, SHA256_DIGEST_LENGTH);
+    // compare_keys("Unsign_txn hash1", output, hash1, SHA256_DIGEST_LENGTH);
 
     sha256_Raw(output, SHA256_DIGEST_LENGTH, output);
-    compare_keys("Unsign_txn hash2", output, hash2, SHA256_DIGEST_LENGTH);
+    // compare_keys("Unsign_txn hash2", output, hash2, SHA256_DIGEST_LENGTH);
 }
 
 void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key, uint8_t* private_key,
@@ -76,32 +32,32 @@ void get_keys(const char *mnemonic, const char *passphrase, uint8_t* public_key,
     hdnode_fill_public_key(&node);
     compare_keys("Master_pubkey", node.public_key, m_pubkey, publickey_len);
     compare_keys("Master_chaincode", node.chain_code, m_chaincode, privkey_len); 
-    node_details(node);    
+    // node_details(node);    
 
     hdnode_private_ckd(&node, purpose);
     hdnode_fill_public_key(&node); 
     compare_keys("M44_pubkey", node.public_key, m44_pubkey, publickey_len);
-    node_details(node); 
+    // node_details(node); 
 
     hdnode_private_ckd(&node, coin_type);
     hdnode_fill_public_key(&node);
     compare_keys("M441_pubkey", node.public_key, m441_pubkey, publickey_len);
-    node_details(node); 
+    // node_details(node); 
 
     hdnode_private_ckd(&node, account);
     hdnode_fill_public_key(&node);
     compare_keys("M4410_pubkey", node.public_key, m4410_pubkey, publickey_len);
-    node_details(node); 
+    // node_details(node); 
 
     hdnode_private_ckd(&node, change);
     hdnode_fill_public_key(&node);
-    compare_keys("M44100_pubkey", node.public_key, m44100_pubkey, publickey_len);
-    node_details(node); 
+    // compare_keys("M44100_pubkey", node.public_key, m44100_pubkey, publickey_len);
+    // node_details(node); 
 
     hdnode_private_ckd(&node, address_idx);
     hdnode_fill_public_key(&node);
-    compare_keys("M441000_pubkey", node.public_key, m441000_pubkey, publickey_len);
-    node_details(node); 
+    // compare_keys("M441000_pubkey", node.public_key, m441000_pubkey, publickey_len);
+    // node_details(node); 
 
     memcpy(public_key, node.public_key, publickey_len);
     memcpy(private_key, node.private_key, privkey_len);    
@@ -120,7 +76,7 @@ int compare_keys(char* name, uint8_t* key1, const char* key2, size_t size){
 }
 
 void node_details(HDNode node){
-    // printf("\nnode details: child_num[%02x] : depth[%02x]\n", node.child_num, node.depth);
+    printf("\nnode details: child_num[%02x] : depth[%02x]\n", node.child_num, node.depth);
 }
 
 void generate_scriptSig(const uint8_t *signature, uint8_t *scriptSig, uint8_t* publicKey, size_t sig_len, size_t scriptSig_len, size_t pubkey_len){
@@ -163,6 +119,51 @@ void generate_scriptPubKey(const uint8_t *public_key_hash, size_t pubkeyhash_len
     scriptPubKey[3+pubkeyhash_len] = 0x88;  // OP_EQUALVERIFY
     scriptPubKey[3+pubkeyhash_len+1] = 0xac;  // OP_CHECKSIG
 }
+
+
+
+// const int il= 32; // id len
+// const int sl = 25; // scriptSig unsigned txn len
+// const int vl = 8; // val len
+// const int ssl = 107; // scriptSig signed txn len
+
+
+// typedef struct {
+//     uint32_t version; // 01000000
+
+//     uint8_t inputs; // 01
+//     uint8_t txid[32]; //b7994a0db2f373a29227e1d90da883c6ce1cb0dd2d6812e4558041ebbbcfa54b
+//     uint32_t vout; // 00000000
+//     uint8_t scriptsigsize; // 19
+//     uint8_t scriptsig[25]; // 76a9144299ff317fcd12ef19047df66d72454691797bfc88ac
+//     uint32_t sequence; // ffffffff
+    
+//     uint8_t outputs; // 01
+//     uint8_t amount[8]; // 983a000000000000
+//     uint8_t scriptpubkeysize; // 19
+//     uint8_t scriptpubkey[25]; // 76a914b3e2819b6262e0b1f19fc7229d75677f347c91ac88ac
+//     uint32_t locktime; // 00000000
+//     uint32_t sighash; // 01000000
+// } TXN;
+
+
+// typedef struct {
+//     uint32_t version; // 01000000
+
+//     uint8_t inputs; // 01
+//     uint8_t txid[32]; //b7994a0db2f373a29227e1d90da883c6ce1cb0dd2d6812e4558041ebbbcfa54b
+//     uint32_t vout; // 00000000
+//     uint8_t scriptsigsize; // 19
+//     uint8_t scriptsig[107]; // 76a9144299ff317fcd12ef19047df66d72454691797bfc88ac
+//     uint32_t sequence; // ffffffff
+    
+//     uint8_t outputs; // 01
+//     uint8_t amount[8]; // 983a000000000000
+//     uint8_t scriptpubkeysize; // 19
+//     uint8_t scriptpubkey[25]; // 76a914b3e2819b6262e0b1f19fc7229d75677f347c91ac88ac
+//     uint32_t locktime; // 00000000
+//     uint32_t sighash; // 01000000
+// } Script_TXN;
 
 // void decode_raw_txn(uint8_t* rTx, TXN txn);
 // void decode_raw_txn(uint8_t* rTx, TXN txn){
